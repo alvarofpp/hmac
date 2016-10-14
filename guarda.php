@@ -35,6 +35,14 @@ if ((!isset($argv[1]) || empty($argv[1])) || $argv[1] == '--help' || $argv[1] ==
                 $hmac->salvar_hmac($argv[2]);
                 break;
             case '-t':
+                $hmac->percorrer_dir($argv[2]);
+                $pasta = substr($argv[2], 0, strlen($argv[2]) - 1);
+                if (file_exists(".guarda/" . $pasta . ".json")) {
+                    $hmac->tracking($argv[2]);
+                } else {
+                    echo "Pasta " . $pasta . " não esta guardo pelo programa.\n";
+                    echo "Use o comando para rastrear a guarda de uma pasta usada.\n";
+                }
                 break;
             case '-x':
                 $hmac->remover_hmac($argv[2]);
@@ -84,7 +92,7 @@ class HMAC
                 $this->json .= '"dir": "' . $ext . '",';
                 $this->json .= '"hmac": "' . $hmac . '"';
                 $this->json .= '}';
-                echo $ext . $file->getFilename() . '  -  ' . $hmac . "\n";
+                //echo $ext . $file->getFilename() . '  -  ' . $hmac . "\n";
             }
         }
     }
@@ -146,14 +154,57 @@ class HMAC
         $th = fopen(".guarda/" . $pasta . ".json", "wb"); // Cria o arquivo na pasta
         fwrite($th, $this->json); // Salva o texto na pasta
         fclose($th);
+        echo "Pasta e arquivos salvos. \n";
+    }
+
+
+    public function tracking($pasta)
+    {
+        $pasta = substr($pasta, 0, strlen($pasta) - 1);
+        $this->json = '[' . (substr($this->json, 1)) . ']';
+        $json_atual = json_decode($this->json, true);
+
+        $json_file = file_get_contents(".guarda/" . $pasta . ".json");
+        $json_salvo = json_decode($json_file, true);
+
+        foreach ($json_atual as $array) {
+            $valor = $this->procurar_json($json_salvo, $array['file']);
+            if (!empty($valor)) {
+                $valores = explode(' - ', $valor);
+                if (!($valores[1] == $array['hmac'])) {
+                    echo "\e[1;36mArquivo \"" . $array['dir'] . $array['file'] . "\" foi alterado. \n";
+                }
+                unset($json_salvo[$valores[0]]);
+            } else {
+                echo "\e[1;32mArquivo \"" . $array['dir'] . $array['file'] . "\" foi adicionado! \n";
+            }
+        }
+        foreach ($json_salvo as $array) {
+            echo "\e[1;31mO arquivo \"" . $array['dir'] . $array['file'] . "\" foi excluído. \n";
+        }
+        $th = fopen(".guarda/" . $pasta . ".json", "wb"); // Cria o arquivo na pasta
+        fwrite($th, json_encode($json_atual)); // Salva o texto na pasta
+        fclose($th);
+        echo "\e[1;33mRastreamento realizado com sucesso! \n";
+        echo "\e[1;33mA guarda da pasta ".$pasta." foi atualizada. \n";
+    }
+
+    public function procurar_json($json, $valor)
+    {
+        foreach ($json as $key => $array) {
+            if ($array['file'] == $valor) {
+                return $key . ' - ' . $array['hmac'];
+            }
+        }
+        return null;
     }
 
     public function remover_hmac($pasta)
     {
         $pasta = substr($pasta, 0, strlen($pasta) - 1);
-        if (!file_exists(".guarda/" . $pasta . ".json")) {
-            rmdir(".guarda/" . $pasta . ".json");
-            echo "Guarda da pasta " . $pasta . " desativado.\n";
+        if (file_exists(".guarda/" . $pasta . ".json")) {
+            $return = unlink(".guarda/" . $pasta . ".json");
+            echo "Guarda da pasta " . $pasta . "/ desativado.\n";
         } else {
             echo "Pasta " . $pasta . " não estava guardada pelo programa.\n";
             echo "Use o comando para desativar a guarda de uma pasta usada.\n";
