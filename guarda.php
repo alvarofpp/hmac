@@ -35,11 +35,11 @@ if ((!isset($argv[1]) || empty($argv[1])) || $argv[1] == '--help' || $argv[1] ==
     if ($hmac->dir) {
         switch ($argv[1]) {
             case '-i':
-                $hmac->percorrer_dir($argv[2]); // Percorre o diretório
-                $hmac->salvar_hmac($argv[2]); // Salva os dados coletados
+                $hmac->percorrerDir($argv[2]); // Percorre o diretório
+                $hmac->salvarHmac($argv[2]); // Salva os dados coletados
                 break;
             case '-t':
-                $hmac->percorrer_dir($argv[2]); // Percorre o diretório
+                $hmac->percorrerDir($argv[2]); // Percorre o diretório
                 $pasta = substr($argv[2], 0, strlen($argv[2]) - 1); // Retira o "/" do segundo parâmetro
                 // Verifica se o arquivo existe
                 if (file_exists(".guarda/" . $pasta . ".json")) {
@@ -50,7 +50,7 @@ if ((!isset($argv[1]) || empty($argv[1])) || $argv[1] == '--help' || $argv[1] ==
                 }
                 break;
             case '-x':
-                $hmac->remover_hmac($argv[2]); // Remove o arquivo JSON com os dados da pasta
+                $hmac->removerHmac($argv[2]); // Remove o arquivo JSON com os dados da pasta
                 break;
         }
     }
@@ -62,42 +62,42 @@ class HMAC
     var $dir; // Usado para informar se o diretório passado é válido ou não
     var $json; // JSON usado para armazenar os dados
     var $ipad, $opad; // Valores usados para os passos do HMAC
-    var $b; // Tamanho
+    var $sizeB; // Tamanho
     var $key; // Chave
 
     // Construtor. Inicia as variáveis e verifica se a pasta passada existe ou não
     function __construct($pasta)
     {
-        $this->verificar_pasta($pasta);
+        $this->verificarPasta($pasta);
         $this->ipad = '00110110';
         $this->opad = '01011100';
-        $this->b = 32;
+        $this->sizeB = 32;
         $this->key = 'segurancaEmR3d3s';
     }
 
     // Essa função serve para verificar se a pasta existe ou não
-    public function verificar_pasta($pasta)
+    public function verificarPasta($pasta)
     {
-        if (is_dir($pasta)) {
-            $this->dir = true;
-        } else {
+        $this->dir = true;
+
+        if (!is_dir($pasta)) {
             $this->dir = false;
             echo "A pasta não existe.\n";
         }
     }
 
     // Essa função percorre a pasta informada, coletando os dados e percorrendo subpastas
-    public function percorrer_dir($ext)
+    public function percorrerDir($ext)
     {
         $dir = new DirectoryIterator($ext); // Usado para interagir com o diretório
         // Percorre os arquivos no diretório
         foreach ($dir as $file) {
             // Verifica se não é /. ou /.. e se é um diretório
             if (!$file->isDot() && $file->isDir()) {
-                $this->percorrer_dir($ext . $file->getFilename() . '/'); // Percorre o diretório
+                $this->percorrerDir($ext . $file->getFilename() . '/'); // Percorre o diretório
             } else if (!$file->isDot()) { // Verifica se não é /. ou /..
                 // Realiza o HMAC do arquivo
-                $hmac = $this->hmac($this->key, md5_file($ext . $file->getFilename())); // Passa a chave e o HASH do arquivo (MD5)
+                $hmac = $this->realizarHmac($this->key, md5_file($ext . $file->getFilename())); // Passa a chave e o HASH do arquivo (MD5)
                 // Arruma as informações para o JSON
                 $this->json .= ',{';
                 $this->json .= '"file": "' . $file->getFilename() . '",'; // Nome do arquivo
@@ -109,56 +109,56 @@ class HMAC
     }
 
     // Realiza o HMAC. Recebe a chave e o HASH passado nos parâmetro
-    public function hmac($key, $message)
+    public function realizarHmac($key, $message)
     {
         // Verifica o tamanho da chave
-        if (strlen($key) < $this->b) { // Se é menor que o tamanho exigido
+        if (strlen($key) < $this->sizeB) { // Se é menor que o tamanho exigido
             $key = str_pad($key, 64, 0, STR_PAD_LEFT); // Preenche com 0 a esquerda até possuir o tamanho necessário
-        } else if (strlen($key) > $this->b) { // Verifica se é maior que o tamanho exigido
+        } else if (strlen($key) > $this->sizeB) { // Verifica se é maior que o tamanho exigido
             $key = md5($key); // Realiza o MD5 da chave
         }
 
         // Realiza o XOR
         $array0 = str_split($key); // Array com os caracteres da chave
-        $array_ipad = str_split($this->ipad); // Array com os caracteres do ipad
-        $array_opad = str_split($this->opad); // Array com os caracteres do opad
-        $k_ipad = array(); // Array com as chaves do ipad
-        $k_opad = array(); // Array com as chaves do opad
-        $k_ipad_temp = array(); // Array auxiliar do ipad
-        $k_opad_temp = array(); // Array auxiliar do opad
+        $ipadArray = str_split($this->ipad); // Array com os caracteres do ipad
+        $opadArray = str_split($this->opad); // Array com os caracteres do opad
+        $ipadKey = array(); // Array com as chaves do ipad
+        $opadKey = array(); // Array com as chaves do opad
+        $ipadKeyTemp = array(); // Array auxiliar do ipad
+        $opadKeyTemp = array(); // Array auxiliar do opad
         for ($i = 0; $i < strlen($key); $i++) {
             // Pega o caractere da chave, transforma em número ASCII e depois em binário
             // Aumenta com 0 a esquerda até possuir 8 caracteres
-            $array_letrabin = str_pad(decbin(ord($array0[$i])), 8, 0, STR_PAD_LEFT);
+            $letraBinArray = str_pad(decbin(ord($array0[$i])), 8, 0, STR_PAD_LEFT);
             for ($c = 0; $c < 8; $c++) {
-                $k_ipad_temp[$c] = ($array_letrabin[$c] xor $array_ipad[$c]) ? '1' : '0'; // XOR IPAD para Si
-                $k_opad_temp[$c] = ($array_letrabin[$c] xor $array_opad[$c]) ? '1' : '0'; // XOR OPAD para So
+                $ipadKeyTemp[$c] = ($letraBinArray[$c] xor $ipadArray[$c]) ? '1' : '0'; // XOR IPAD para stringI
+                $opadKeyTemp[$c] = ($letraBinArray[$c] xor $opadArray[$c]) ? '1' : '0'; // XOR OPAD para stringO
             }
-            $k_ipad[$i] = implode("", $k_ipad_temp); // Transforma em uma string e armazena nas chaves do ipad
-            $k_opad[$i] = implode("", $k_opad_temp); // Transforma em uma string e armazena nas chaves do opad
-            $k_ipad_temp = null; // Esvazia o array temporário do ipad
-            $k_opad_temp = null; // Esvazia o array temporário do opad
+            $ipadKey[$i] = implode("", $ipadKeyTemp); // Transforma em uma string e armazena nas chaves do ipad
+            $opadKey[$i] = implode("", $opadKeyTemp); // Transforma em uma string e armazena nas chaves do opad
+            $ipadKeyTemp = null; // Esvazia o array temporário do ipad
+            $opadKeyTemp = null; // Esvazia o array temporário do opad
         }
 
         // Converte todos os valores armazenados no array em binário e depois em caractere
-        for ($i = 0; $i < sizeof($k_ipad); $i++) {
-            $k_ipad[$i] = chr(bindec($k_ipad[$i]));
-            $k_opad[$i] = chr(bindec($k_opad[$i]));
+        for ($i = 0; $i < sizeof($ipadKey); $i++) {
+            $ipadKey[$i] = chr(bindec($ipadKey[$i]));
+            $opadKey[$i] = chr(bindec($opadKey[$i]));
         }
-        $Si = implode("", $k_ipad); // Transforma em uma string
-        $So = implode("", $k_opad); // Transforma em uma string
+        $stringI = implode("", $ipadKey); // Transforma em uma string
+        $stringO = implode("", $opadKey); // Transforma em uma string
 
-        // Aplicar hash a junção de $mensagem e $Si
-        $hash = md5($message . $Si);
+        // Aplicar hash a junção de $mensagem e $stringI
+        $hash = md5($message . $stringI);
 
-        // Aplicar hash a junção do hash gerado anteriormente e $So
-        $hash_final = md5($So . $hash);
+        // Aplicar hash a junção do hash gerado anteriormente e $stringO
+        $hashFinal = md5($stringO . $hash);
 
-        return $hash_final; // Retorna o HMAC
+        return $hashFinal; // Retorna o HMAC
     }
 
     // Salva o HMAC gerado até agora
-    public function salvar_hmac($pasta)
+    public function salvarHmac($pasta)
     {
         $pasta = substr($pasta, 0, strlen($pasta) - 1); // Retira o "/" da pasta passada
         $this->json = '[' . (substr($this->json, 1)) . ']'; // Termina a estrutura JSON
@@ -168,9 +168,9 @@ class HMAC
             mkdir(".guarda"); // Cria a pasta
         }
 
-        $th = fopen(".guarda/" . $pasta . ".json", "wb"); // Cria/ler o arquivo na pasta
-        fwrite($th, $this->json); // Salva o JSON na pasta
-        fclose($th); // Fecha o ponteiro
+        $file = fopen(".guarda/" . $pasta . ".json", "wb"); // Cria/ler o arquivo na pasta
+        fwrite($file, $this->json); // Salva o JSON na pasta
+        fclose($file); // Fecha o ponteiro
         echo "Pasta e arquivos salvos. \n";
     }
 
@@ -179,16 +179,16 @@ class HMAC
     {
         $pasta = substr($pasta, 0, strlen($pasta) - 1); // Retira o "/" da pasta passada
         $this->json = '[' . (substr($this->json, 1)) . ']'; // Termina a estrutura do JSON
-        $json_atual = json_decode($this->json, true); // Decofidica como JSON, retorna array
+        $jsonAtual = json_decode($this->json, true); // Decofidica como JSON, retorna array
 
-        $json_file = file_get_contents(".guarda/" . $pasta . ".json"); // Pega o JSON salvo
-        $json_salvo = json_decode($json_file, true); // Decofidica como JSON, retorna array
+        $jsonFile = file_get_contents(".guarda/" . $pasta . ".json"); // Pega o JSON salvo
+        $jsonSalvo = json_decode($jsonFile, true); // Decofidica como JSON, retorna array
 
-        // $json_atual: conterá os novos valores obtidos
-        // $json_salvo: conterá os valores já salvos em arquivo
+        // $jsonAtual: conterá os novos valores obtidos
+        // $jsonSalvo: conterá os valores já salvos em arquivo
 
-        foreach ($json_atual as $array) {
-            $valor = $this->procurar_json($json_salvo, $array['file']); // Verifica se campo já existia no JSON do arquivo já salvo
+        foreach ($jsonAtual as $array) {
+            $valor = $this->procurarJson($jsonSalvo, $array['file']); // Verifica se campo já existia no JSON do arquivo já salvo
             // Verifica se está vazio
             if (!empty($valor)) {
                 $valores = explode(' - ', $valor); // Transforma em um array de 2 posições
@@ -196,25 +196,25 @@ class HMAC
                 if (!($valores[1] == $array['hmac'])) {
                     echo "\e[1;36mArquivo \"" . $array['dir'] . $array['file'] . "\" foi alterado. \n"; // Exibe mensagem sobre arquivos alterados
                 }
-                unset($json_salvo[$valores[0]]); // Esvazia indice no array
+                unset($jsonSalvo[$valores[0]]); // Esvazia indice no array
             } else {
                 echo "\e[1;32mArquivo \"" . $array['dir'] . $array['file'] . "\" foi adicionado! \n"; // Exibe mensagem sobre novos arquivos
             }
         }
-        // Ao final do foreach anterior, $json_salvo só conterá os arquivos apagados
-        foreach ($json_salvo as $array) {
+        // Ao final do foreach anterior, $jsonSalvo só conterá os arquivos apagados
+        foreach ($jsonSalvo as $array) {
             echo "\e[1;31mO arquivo \"" . $array['dir'] . $array['file'] . "\" foi excluído. \n"; // Exibe mensagem sobre arquivos excluídos
         }
-        $th = fopen(".guarda/" . $pasta . ".json", "wb"); // Cria o arquivo na pasta
-        fwrite($th, json_encode($json_atual)); // Salva o JSON na pasta
-        fclose($th); // Fecha o ponteiro
+        $file = fopen(".guarda/" . $pasta . ".json", "wb"); // Cria o arquivo na pasta
+        fwrite($file, json_encode($jsonAtual)); // Salva o JSON na pasta
+        fclose($file); // Fecha o ponteiro
         echo "\e[1;33mRastreamento realizado com sucesso! \n";
         echo "\e[1;33mA guarda da pasta ".$pasta." foi atualizada. \n";
     }
 
     // Procura valores referentes ao arquivo
     // Recebe JSON e valor que deve ser procurado (nome do arquivo)
-    public function procurar_json($json, $valor)
+    public function procurarJson($json, $valor)
     {
         // Percorre JSON
         foreach ($json as $key => $array) {
@@ -227,7 +227,7 @@ class HMAC
     }
 
     // Deleta o arquivo JSON da pasta passada como parâmetro
-    public function remover_hmac($pasta)
+    public function removerHmac($pasta)
     {
         $pasta = substr($pasta, 0, strlen($pasta) - 1); // Retira o "/" da pasta passada como parâmetro
         // Verifica se arquivo existe
