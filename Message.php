@@ -13,8 +13,9 @@ class Message
     protected $colors = [
         'delete' => "\e[0;31m",
         'add' => "\e[0;32m",
-        'alter' => "\e[0;36m",
         'warning' => "\e[0;33m",
+        'alter' => "\e[0;36m",
+        'error' => "\e[1;31m",
         'success' => "\e[1;32m",
         'alert' => "\e[1;33m",
     ];

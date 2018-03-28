@@ -33,7 +33,7 @@ class FileManagement
      */
     private function loadData()
     {
-        $this->dirGuardaExist();
+        $this->dirGuardExist();
 
         if (!$this->fileExist()) {
             return;
@@ -56,13 +56,16 @@ class FileManagement
     /**
      * Verify that directory of program exist.
      *
-     * @return void.
+     * @return bool True if there is, false if not there is.
      */
     private function dirGuardExist()
     {
         if (!file_exists(self::JSON_PATH)) {
             mkdir(self::JSON_PATH);
+            return false;
         }
+
+        return true;
     }
 
     /**
@@ -78,8 +81,8 @@ class FileManagement
             return false;
         }
 
-        $this->dir = $dir;
-        $this->file = self::JSON_PATH . $dir . ".json";
+        $this->dir = substr($dir, -1)=='/'?$dir:$dir.'/';
+        $this->file = $this->dir . self::JSON_PATH  . md5($this->dir) . ".json";
 
         return true;
     }
@@ -140,7 +143,7 @@ class FileManagement
      */
     public function save()
     {
-        $this->dirGuardaExist();
+        $this->dirGuardExist();
 
         $json = json_encode($this->filesData);
 
@@ -188,5 +191,15 @@ class FileManagement
         } else {
             (new Message())->show($this->dir . ' directory was not saved by program.', 'alert');
         }
+    }
+
+    public function getVars()
+    {
+        return [
+            'dir' => $this->dir,
+            'file' => $this->file,
+            'jsonData' => $this->jsonData,
+            'filesData' => $this->filesData,
+        ];
     }
 }
