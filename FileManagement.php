@@ -35,7 +35,7 @@ class FileManagement
     {
         $this->dirGuardaExist();
 
-        if (!file_exists($this->file)) {
+        if (!$this->fileExist()) {
             return;
         }
 
@@ -44,11 +44,21 @@ class FileManagement
     }
 
     /**
+     * Load JSON file data of directory.
+     *
+     * @return bool True if file exist, false if not exist.
+     */
+    private function fileExist()
+    {
+        return file_exists($this->file)?true:false;
+    }
+
+    /**
      * Verify that directory of program exist.
      *
      * @return void.
      */
-    private function dirGuardaExist()
+    private function dirGuardExist()
     {
         if (!file_exists(self::JSON_PATH)) {
             mkdir(self::JSON_PATH);
@@ -163,5 +173,20 @@ class FileManagement
         }
 
         return -1;
+    }
+
+    /**
+     * Remove guard of files of the directory.
+     *
+     * @return void.
+     */
+    public function remove()
+    {
+        if ($this->dirGuardExist() && $this->fileExist()) {
+            unlink($this->file);
+            (new Message())->show('HMAC files from the ' . $this->dir . ' directory are no longer being saved.', 'warning');
+        } else {
+            (new Message())->show($this->dir . ' directory was not saved by program.', 'alert');
+        }
     }
 }

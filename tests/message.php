@@ -14,4 +14,5 @@ require dirname(__DIR__) . '/Message.php';
 (new Message())->show('ALTER', 'alter');
 (new Message())->show('WARNING', 'warning');
 (new Message())->show('SUCCESS', 'success');
+(new Message())->show('ALERT', 'alert');
 (new Message())->show('NOT EXIST', 'hueragem');

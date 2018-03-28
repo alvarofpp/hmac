@@ -16,6 +16,7 @@ class Message
         'alter' => "\e[0;36m",
         'warning' => "\e[0;33m",
         'success' => "\e[1;32m",
+        'alert' => "\e[1;33m",
     ];
 
     /**
@@ -27,7 +28,7 @@ class Message
      */
     public function show($msg, $cod = null)
     {
-        if (isset($cod) && (array_key_exists($cod, $this->colors))) {
+        if (isset($cod) && array_key_exists($cod, $this->colors)) {
             echo $this->colors[$cod];
         }
 
