@@ -5,8 +5,6 @@
  * Time: 20:25
  */
 
-use DirectoryIterator;
-
 /**
 * This class performs operations for file management.
 */
