@@ -5,18 +5,17 @@
  * Time: 20:30
  */
 
-namespace Hmac;
-
 /**
 * This class shows messages in the terminal of different ways.
 */
 class Message
 {
     protected $colors = [
-        'delete' => '\e[1;31m',
-        'add' => '\e[1;32m',
-        'alter' => '\e[1;36m',
-        'alert' => '\e[1;33m',
+        'delete' => "\e[0;31m",
+        'add' => "\e[0;32m",
+        'alter' => "\e[0;36m",
+        'warning' => "\e[0;33m",
+        'success' => "\e[1;32m",
     ];
 
     /**
@@ -28,9 +27,10 @@ class Message
      */
     public function show($msg, $cod = null)
     {
-        if (isset($cod)) {
+        if (isset($cod) && (array_key_exists($cod, $this->colors))) {
             echo $this->colors[$cod];
         }
-        echo $msg."\n";
+
+        echo $msg . "\033[0m\n";
     }
 }
