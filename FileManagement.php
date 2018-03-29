@@ -19,17 +19,18 @@ class FileManagement
 
     function __construct($dir)
     {
-        $this->filesData = [];
-
-        if ($this->dirExist($dir)) {
-            $this->loadData();
+        if (!$this->dirExist($dir)) {
+            exit();
         }
+
+        $this->filesData = [];
+        $this->loadData();
     }
 
     /**
      * Load JSON file data of directory.
      *
-     * @return void.
+     * @return void
      */
     private function loadData()
     {
@@ -46,7 +47,7 @@ class FileManagement
     /**
      * Load JSON file data of directory.
      *
-     * @return bool True if file exist, false if not exist.
+     * @return bool True if file exist, false if not exist
      */
     private function fileExist()
     {
@@ -56,7 +57,7 @@ class FileManagement
     /**
      * Verify that directory of program exist.
      *
-     * @return bool True if there is, false if not there is.
+     * @return bool True if there is, false if not there is
      */
     private function dirGuardExist()
     {
@@ -71,8 +72,8 @@ class FileManagement
     /**
      * Verify that directory exist.
      *
-     * @param string $dir Directory that you want to check if it exists.
-     * @return bool True if there is, false if not there is.
+     * @param string $dir Directory that you want to check if it exists
+     * @return bool True if there is, false if not there is
      */
     public function dirExist($dir)
     {
@@ -90,8 +91,8 @@ class FileManagement
     /**
      * Verify that directory exist.
      *
-     * @param string $dir Directory that you want to check if it exists.
-     * @return bool True if there is, false if not there is.
+     * @param string $dir Directory that you want to check if it exists
+     * @return bool True if there is, false if not there is
      */
     public static function dirValidate($dir)
     {
@@ -106,9 +107,9 @@ class FileManagement
     /**
      * Go through the files in the directory and execute hmac for each one.
      *
-     * @param HMAC $hmac HMAC class for apply function execute.
-     * @param string $path Paths of files.
-     * @return void.
+     * @param HMAC $hmac HMAC class for apply function execute
+     * @param string $path Paths of files
+     * @return void
      */
     public function through(HMAC $hmac, $path = null)
     {
@@ -125,12 +126,11 @@ class FileManagement
                 $this->through($hmac, $filePath . '/');
 
             } elseif (!$file->isDot()) {
-                $hmac = $hmac->execute(md5_file($filePath));
 
                 array_push($this->filesData, [
                     "file" => $file->getFilename(),
                     "dir" => $path,
-                    "hmac" => $file->getFilename(),
+                    "hmac" => $hmac->execute(md5_file($filePath)),
                 ]);
             }
         }
@@ -139,7 +139,7 @@ class FileManagement
     /**
      * Save HMAC of the files in JSON file.
      *
-     * @return void.
+     * @return void
      */
     public function save()
     {
@@ -157,8 +157,8 @@ class FileManagement
     /**
      * Search filename in jsonData.
      *
-     * @param string $filename The filename you want to search.
-     * @return array|int -1 if filename is not in jsonData or return array with values.
+     * @param string $filename The filename you want to search
+     * @return array|int -1 if filename is not in jsonData or return array with values
      */
     public function search($filename)
     {
@@ -181,7 +181,7 @@ class FileManagement
     /**
      * Remove guard of files of the directory.
      *
-     * @return void.
+     * @return void
      */
     public function remove()
     {
@@ -193,13 +193,45 @@ class FileManagement
         }
     }
 
-    public function getVars()
+    /**
+     * Realizes the tracking of files of directory.
+     *
+     * @return void
+     */
+    public function tracking()
     {
-        return [
-            'dir' => $this->dir,
-            'file' => $this->file,
-            'jsonData' => $this->jsonData,
-            'filesData' => $this->filesData,
-        ];
+        $pasta = substr($pasta, 0, strlen($pasta) - 1); // Retira o "/" da pasta passada
+        $this->json = '[' . (substr($this->json, 1)) . ']'; // Termina a estrutura do JSON
+        $jsonAtual = json_decode($this->json, true); // Decofidica como JSON, retorna array
+
+        $jsonFile = file_get_contents(".guarda/" . $pasta . ".json"); // Pega o JSON salvo
+        $jsonSalvo = json_decode($jsonFile, true); // Decofidica como JSON, retorna array
+
+        // $jsonAtual: conterá os novos valores obtidos
+        // $jsonSalvo: conterá os valores já salvos em arquivo
+
+        foreach ($jsonAtual as $array) {
+            $valor = $this->procurarJson($jsonSalvo, $array['file']); // Verifica se campo já existia no JSON do arquivo já salvo
+            // Verifica se está vazio
+            if (!empty($valor)) {
+                $valores = explode(' - ', $valor); // Transforma em um array de 2 posições
+                // Verifica se o HMAC do arquivo foi modificado
+                if (!($valores[1] == $array['hmac'])) {
+                    echo "\e[1;36mArquivo \"" . $array['dir'] . $array['file'] . "\" foi alterado. \n"; // Exibe mensagem sobre arquivos alterados
+                }
+                unset($jsonSalvo[$valores[0]]); // Esvazia indice no array
+            } else {
+                echo "\e[1;32mArquivo \"" . $array['dir'] . $array['file'] . "\" foi adicionado! \n"; // Exibe mensagem sobre novos arquivos
+            }
+        }
+        // Ao final do foreach anterior, $jsonSalvo só conterá os arquivos apagados
+        foreach ($jsonSalvo as $array) {
+            echo "\e[1;31mO arquivo \"" . $array['dir'] . $array['file'] . "\" foi excluído. \n"; // Exibe mensagem sobre arquivos excluídos
+        }
+        $file = fopen(".guarda/" . $pasta . ".json", "wb"); // Cria o arquivo na pasta
+        fwrite($file, json_encode($jsonAtual)); // Salva o JSON na pasta
+        fclose($file); // Fecha o ponteiro
+        echo "\e[1;33mRastreamento realizado com sucesso! \n";
+        echo "\e[1;33mA guarda da pasta ".$pasta." foi atualizada. \n";
     }
 }
