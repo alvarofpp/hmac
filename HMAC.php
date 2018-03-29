@@ -31,6 +31,26 @@ class HMAC
         $this->createKeys();
     }
 
+    public function info()
+    {
+        $this->fileManagement->info();
+
+        echo "sizeB: " . $this->sizeB . "\n";
+        echo "key: " . $this->key . "\n";
+
+        echo "ipad: " . $this->ipad . "\n";
+        echo "opad: " . $this->opad . "\n";
+
+        echo "ipadKey: " . $this->ipadKey . "\n";
+        echo "opadKey: " . $this->opadKey . "\n";
+    }
+
+    public function filesTracking()
+    {
+        $this->fileManagement->through($this);
+        $this->fileManagement->tracking();
+    }
+
     /**
      * Check the key lengths and perform the required procedure.
      *

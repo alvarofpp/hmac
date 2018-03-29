@@ -27,6 +27,12 @@ class FileManagement
         $this->loadData();
     }
 
+    public function info()
+    {
+        echo "dir: " . $this->dir . "\n";
+        echo "file: " . $this->file . "\n";
+    }
+
     /**
      * Load JSON file data of directory.
      *
@@ -83,7 +89,7 @@ class FileManagement
         }
 
         $this->dir = substr($dir, -1)=='/'?$dir:$dir.'/';
-        $this->file = $this->dir . self::JSON_PATH  . md5($this->dir) . ".json";
+        $this->file = dirname(__FILE__) . '/' . self::JSON_PATH  . md5($this->dir) . ".json";
 
         return true;
     }
@@ -113,13 +119,15 @@ class FileManagement
      */
     public function through(HMAC $hmac, $path = null)
     {
-        if (!isset($dir)) {
+        if (!isset($path)) {
             $path = $this->dir;
         }
+
 
         $dir = new DirectoryIterator($path);
 
         foreach ($dir as $file) {
+
             $filePath = $path . $file->getFilename();
 
             if (!$file->isDot() && $file->isDir()) {
@@ -202,12 +210,15 @@ class FileManagement
     {
         $message = new Message();
 
+        //print_r($this->filesData);
+
         foreach ($this->filesData as $data) {
             $values = $this->search($data['file']);
 
             if (!($values == -1)) {
                 $fileData = $this->jsonData[$values['key']];
 
+                // Altered files
                 if (!($fileData['hmac'] == $values['hmac'])) {
                     $message->show('File ' . $fileData['file'] . ' has be altered!', 'alter');
                 }
@@ -215,10 +226,12 @@ class FileManagement
                 unset($this->jsonData[$values['key']]);
 
             } else {
+                // New files
                 $message->show('File ' . $data['file'] . ' has be added!', 'add');
             }
         }
 
+        // Files that were deleted
         foreach ($this->filesData as $data) {
             $message->show('File ' . $data['file'] . ' has be deleted!', 'delete');
         }
