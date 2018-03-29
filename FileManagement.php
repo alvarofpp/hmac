@@ -200,38 +200,31 @@ class FileManagement
      */
     public function tracking()
     {
-        $pasta = substr($pasta, 0, strlen($pasta) - 1); // Retira o "/" da pasta passada
-        $this->json = '[' . (substr($this->json, 1)) . ']'; // Termina a estrutura do JSON
-        $jsonAtual = json_decode($this->json, true); // Decofidica como JSON, retorna array
+        $message = new Message();
 
-        $jsonFile = file_get_contents(".guarda/" . $pasta . ".json"); // Pega o JSON salvo
-        $jsonSalvo = json_decode($jsonFile, true); // Decofidica como JSON, retorna array
+        foreach ($this->filesData as $data) {
+            $values = $this->search($data['file']);
 
-        // $jsonAtual: conterá os novos valores obtidos
-        // $jsonSalvo: conterá os valores já salvos em arquivo
+            if (!($values == -1)) {
+                $fileData = $this->jsonData[$values['key']];
 
-        foreach ($jsonAtual as $array) {
-            $valor = $this->procurarJson($jsonSalvo, $array['file']); // Verifica se campo já existia no JSON do arquivo já salvo
-            // Verifica se está vazio
-            if (!empty($valor)) {
-                $valores = explode(' - ', $valor); // Transforma em um array de 2 posições
-                // Verifica se o HMAC do arquivo foi modificado
-                if (!($valores[1] == $array['hmac'])) {
-                    echo "\e[1;36mArquivo \"" . $array['dir'] . $array['file'] . "\" foi alterado. \n"; // Exibe mensagem sobre arquivos alterados
+                if (!($fileData['hmac'] == $values['hmac'])) {
+                    $message->show('File ' . $fileData['file'] . ' has be altered!', 'alter');
                 }
-                unset($jsonSalvo[$valores[0]]); // Esvazia indice no array
+
+                unset($this->jsonData[$values['key']]);
+
             } else {
-                echo "\e[1;32mArquivo \"" . $array['dir'] . $array['file'] . "\" foi adicionado! \n"; // Exibe mensagem sobre novos arquivos
+                $message->show('File ' . $data['file'] . ' has be added!', 'add');
             }
         }
-        // Ao final do foreach anterior, $jsonSalvo só conterá os arquivos apagados
-        foreach ($jsonSalvo as $array) {
-            echo "\e[1;31mO arquivo \"" . $array['dir'] . $array['file'] . "\" foi excluído. \n"; // Exibe mensagem sobre arquivos excluídos
+
+        foreach ($this->filesData as $data) {
+            $message->show('File ' . $data['file'] . ' has be deleted!', 'delete');
         }
-        $file = fopen(".guarda/" . $pasta . ".json", "wb"); // Cria o arquivo na pasta
-        fwrite($file, json_encode($jsonAtual)); // Salva o JSON na pasta
-        fclose($file); // Fecha o ponteiro
-        echo "\e[1;33mRastreamento realizado com sucesso! \n";
-        echo "\e[1;33mA guarda da pasta ".$pasta." foi atualizada. \n";
+
+        $this->save();
+
+        $message->show('Tracking completed!', 'alert');
     }
 }
