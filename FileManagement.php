@@ -27,12 +27,6 @@ class FileManagement
         $this->loadData();
     }
 
-    public function info()
-    {
-        echo "dir: " . $this->dir . "\n";
-        echo "file: " . $this->file . "\n";
-    }
-
     /**
      * Load JSON file data of directory.
      *
@@ -176,10 +170,7 @@ class FileManagement
 
         foreach ($this->jsonData as $key => $array) {
             if ($array['file'] == $filename) {
-                return [
-                    'key' => $key,
-                    'hmac' => $array['hmac'],
-                ];
+                return $this->jsonData[$key];
             }
         }
 
