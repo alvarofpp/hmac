@@ -210,8 +210,6 @@ class FileManagement
     {
         $message = new Message();
 
-        //print_r($this->filesData);
-
         foreach ($this->filesData as $data) {
             $values = $this->search($data['file']);
 
@@ -232,8 +230,10 @@ class FileManagement
         }
 
         // Files that were deleted
-        foreach ($this->filesData as $data) {
-            $message->show('File ' . $data['file'] . ' has be deleted!', 'delete');
+        if (!empty($this->jsonData)) {
+            foreach ($this->jsonData as $data) {
+                $message->show('File ' . $data['file'] . ' has be deleted!', 'delete');
+            }
         }
 
         $this->save();
