@@ -13,4 +13,3 @@ echo FileManagement::dirValidate(dirname(__DIR__) . '/huehuehue');
 echo FileManagement::dirValidate(dirname(__DIR__) . '/test')."\n";
 
 $filemanagement = new FileManagement(dirname(__DIR__) . '/test');
-print_r($filemanagement->getVars());
