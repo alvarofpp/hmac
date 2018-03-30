@@ -1,14 +1,15 @@
 <?php
 /**
- * User: alvarofpp
- * Date: 27/03/18
- * Time: 20:30
+ * Copyright (C) 2018 Álvaro Ferreira Pires de Paiva
+ * Github: alvarofpp
+ * E-mail: alvarofepipa@gmail.com
  */
+namespace Classes;
 
 /**
 * This class shows messages in the terminal of different ways.
 */
-class Message
+class Display
 {
     protected $colors = [
         'delete' => "\e[0;31m",
@@ -23,7 +24,7 @@ class Message
     /**
      * Show the message in terminal.
      *
-     * @param string $msg Message you want to display in the terminal
+     * @param string $msg Display you want to display in the terminal
      * @param string null $cod Code of colors that you want the message to have
      * @return void
      */

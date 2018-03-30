@@ -1,20 +1,21 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: roleta
- * Date: 27/03/18
- * Time: 23:09
+ * Copyright (C) 2018 Álvaro Ferreira Pires de Paiva
+ * Github: alvarofpp
+ * E-mail: alvarofepipa@gmail.com
  */
 
-require dirname(__DIR__) . '/Message.php';
+require dirname(__DIR__) . '/classes/Display.php';
 
-(new Message())->show('DELETE', 'delete');
-(new Message())->show('ADD', 'add');
-(new Message())->show('ALTER', 'alter');
-(new Message())->show('WARNING', 'warning');
+use Classes\Display;
 
-(new Message())->show('ERROR', 'error');
-(new Message())->show('SUCCESS', 'success');
-(new Message())->show('ALERT', 'alert');
+(new Display())->show('DELETE', 'delete');
+(new Display())->show('ADD', 'add');
+(new Display())->show('ALTER', 'alter');
+(new Display())->show('WARNING', 'warning');
 
-(new Message())->show('NOT EXIST', 'hueragem');
+(new Display())->show('ERROR', 'error');
+(new Display())->show('SUCCESS', 'success');
+(new Display())->show('ALERT', 'alert');
+
+(new Display())->show('NOT EXIST', 'hueragem');

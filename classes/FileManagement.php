@@ -1,9 +1,12 @@
 <?php
 /**
- * User: alvarofpp
- * Date: 27/03/18
- * Time: 20:25
+ * Copyright (C) 2018 Álvaro Ferreira Pires de Paiva
+ * Github: alvarofpp
+ * E-mail: alvarofepipa@gmail.com
  */
+namespace Classes;
+
+use DirectoryIterator;
 
 /**
 * This class performs operations for file management.
@@ -78,12 +81,12 @@ class FileManagement
     public function dirExist($dir)
     {
         if (!is_dir($dir)) {
-            (new Message())->show('Directory does not exist.', 'error');
+            (new Display())->show('Directory does not exist.', 'error');
             return false;
         }
 
         $this->dir = substr($dir, -1)=='/'?$dir:$dir.'/';
-        $this->file = dirname(__FILE__) . '/' . self::JSON_PATH  . md5($this->dir) . ".json";
+        $this->file = dirname(dirname(__FILE__)) . '/' . self::JSON_PATH  . md5($this->dir) . ".json";
 
         return true;
     }
@@ -97,7 +100,7 @@ class FileManagement
     public static function dirValidate($dir)
     {
         if (!is_dir($dir)) {
-            (new Message())->show('Directory does not exist.', 'error');
+            (new Display())->show('Directory does not exist.', 'error');
             return false;
         }
 
@@ -148,12 +151,12 @@ class FileManagement
         $this->dirGuardExist();
 
         $json = json_encode($this->filesData);
-
+        (new Display())->show($this->file, 'error');
         $file = fopen($this->file, "wb");
         fwrite($file, $json);
         fclose($file);
 
-        (new Message())->show('Files saved!', 'success');
+        (new Display())->show('Files saved!', 'success');
     }
 
     /**
@@ -186,9 +189,9 @@ class FileManagement
     {
         if ($this->dirGuardExist() && $this->fileExist()) {
             unlink($this->file);
-            (new Message())->show('HMAC files from the ' . $this->dir . ' directory are no longer being saved.', 'warning');
+            (new Display())->show('HMAC files from the ' . $this->dir . ' directory are no longer being saved.', 'warning');
         } else {
-            (new Message())->show($this->dir . ' directory was not saved by program.', 'alert');
+            (new Display())->show($this->dir . ' directory was not saved by program.', 'alert');
         }
     }
 
@@ -199,7 +202,7 @@ class FileManagement
      */
     public function tracking()
     {
-        $message = new Message();
+        $display = new Display();
 
         foreach ($this->filesData as $data) {
             $values = $this->search($data['file']);
@@ -209,26 +212,26 @@ class FileManagement
 
                 // Altered files
                 if (!($fileData['hmac'] == $values['hmac'])) {
-                    $message->show('File ' . $fileData['file'] . ' has be altered!', 'alter');
+                    $display->show('File ' . $fileData['file'] . ' has be altered!', 'alter');
                 }
 
                 unset($this->jsonData[$values['key']]);
 
             } else {
                 // New files
-                $message->show('File ' . $data['file'] . ' has be added!', 'add');
+                $display->show('File ' . $data['file'] . ' has be added!', 'add');
             }
         }
 
         // Files that were deleted
         if (!empty($this->jsonData)) {
             foreach ($this->jsonData as $data) {
-                $message->show('File ' . $data['file'] . ' has be deleted!', 'delete');
+                $display->show('File ' . $data['file'] . ' has be deleted!', 'delete');
             }
         }
 
         $this->save();
 
-        $message->show('Tracking completed!', 'alert');
+        $display->show('Tracking completed!', 'alert');
     }
 }

@@ -1,12 +1,13 @@
 <?php
 /**
- * User: alvarofpp
- * Date: 27/03/18
- * Time: 20:18
+ * Copyright (C) 2018 Álvaro Ferreira Pires de Paiva
+ * Github: alvarofpp
+ * E-mail: alvarofepipa@gmail.com
  */
+namespace Classes;
 
 /**
-* This class performs the operations required to run the Hash-based Message Authentication Code (HMAC).
+* This class performs the operations required to run the Hash-based Display Authentication Code (HMAC).
 */
 class HMAC
 {
@@ -24,13 +25,18 @@ class HMAC
     {
         $this->ipad = '00110110';
         $this->opad = '01011100';
-        $this->sizeB = 32;
+        $this->sizeB = 64;
         $this->key = 'segurancaEmR3d3s';
 
         $this->fileManagement = new FileManagement($dir);
         $this->createKeys();
     }
 
+    /**
+     * Realizes the tracking.
+     *
+     * @return void
+     */
     public function filesTracking()
     {
         $this->fileManagement->through($this);
@@ -47,7 +53,7 @@ class HMAC
         $len = strlen($this->key);
 
         if ($len < $this->sizeB) {
-            $this->key = str_pad($this->key, 64, 0, STR_PAD_LEFT);
+            $this->key = str_pad($this->key, $this->sizeB, 0, STR_PAD_LEFT);
         } elseif ($len > $this->sizeB) {
             $this->key = md5($this->key);
         }
@@ -63,7 +69,7 @@ class HMAC
         $this->lengthKeys();
         $key = $this->key;
 
-        $array0 = str_split($key);
+        $arrayKey = str_split($key);
         $ipadArray = str_split($this->ipad);
         $opadArray = str_split($this->opad);
 
@@ -74,7 +80,7 @@ class HMAC
 
         // XOR
         for ($i = 0; $i < strlen($key); $i++) {
-            $letterBinArray = str_pad(decbin(ord($array0[$i])), 8, 0, STR_PAD_LEFT);
+            $letterBinArray = str_pad(decbin(ord($arrayKey[$i])), 8, 0, STR_PAD_LEFT);
 
             for ($c = 0; $c < 8; $c++) {
                 $ipadKeyTemp[$c] = ($letterBinArray[$c] xor $ipadArray[$c]) ? '1' : '0';

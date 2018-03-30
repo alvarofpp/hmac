@@ -1,14 +1,15 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: roleta
- * Date: 27/03/18
- * Time: 23:09
+ * Copyright (C) 2018 Álvaro Ferreira Pires de Paiva
+ * Github: alvarofpp
+ * E-mail: alvarofepipa@gmail.com
  */
 
-require dirname(__DIR__) . '/HMAC.php';
-require dirname(__DIR__) . '/Message.php';
-require dirname(__DIR__) . '/FileManagement.php';
+require dirname(__DIR__) . '/classes/HMAC.php';
+require dirname(__DIR__) . '/classes/Display.php';
+require dirname(__DIR__) . '/classes/FileManagement.php';
+
+use Classes\HMAC;
 
 $hmac = new HMAC(dirname(__DIR__) . '/test');
 //$hmac->info();
