@@ -1,8 +1,8 @@
 <?php
 /**
- * User: alvarofpp
- * Date: 27/03/18
- * Time: 20:25
+ * Copyright (C) 2018 Álvaro Ferreira Pires de Paiva
+ * Github: alvarofpp
+ * E-mail: alvarofepipa@gmail.com
  */
 
 /**

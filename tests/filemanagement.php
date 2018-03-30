@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: roleta
- * Date: 27/03/18
- * Time: 23:09
+ * Copyright (C) 2018 Álvaro Ferreira Pires de Paiva
+ * Github: alvarofpp
+ * E-mail: alvarofepipa@gmail.com
  */
 
 require dirname(__DIR__) . '/Message.php';
