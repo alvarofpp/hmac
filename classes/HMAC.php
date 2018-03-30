@@ -32,6 +32,11 @@ class HMAC
         $this->createKeys();
     }
 
+    /**
+     * Realizes the tracking.
+     *
+     * @return void
+     */
     public function filesTracking()
     {
         $this->fileManagement->through($this);
@@ -64,7 +69,7 @@ class HMAC
         $this->lengthKeys();
         $key = $this->key;
 
-        $array0 = str_split($key);
+        $arrayKey = str_split($key);
         $ipadArray = str_split($this->ipad);
         $opadArray = str_split($this->opad);
 
@@ -75,7 +80,7 @@ class HMAC
 
         // XOR
         for ($i = 0; $i < strlen($key); $i++) {
-            $letterBinArray = str_pad(decbin(ord($array0[$i])), 8, 0, STR_PAD_LEFT);
+            $letterBinArray = str_pad(decbin(ord($arrayKey[$i])), 8, 0, STR_PAD_LEFT);
 
             for ($c = 0; $c < 8; $c++) {
                 $ipadKeyTemp[$c] = ($letterBinArray[$c] xor $ipadArray[$c]) ? '1' : '0';
