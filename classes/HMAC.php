@@ -7,7 +7,7 @@
 namespace Classes;
 
 /**
-* This class performs the operations required to run the Hash-based Display Authentication Code (HMAC).
+* This class performs the operations required to run the Hash-based Message Authentication Code (HMAC).
 */
 class HMAC
 {
@@ -33,7 +33,7 @@ class HMAC
     }
 
     /**
-     * Realizes the tracking.
+     * Performs tracking.
      *
      * @return void
      */
@@ -44,7 +44,7 @@ class HMAC
     }
 
     /**
-     * Check the key lengths and perform the required procedure.
+     * Checks the key length and performs the required procedure.
      *
      * @return void
      */
@@ -60,7 +60,7 @@ class HMAC
     }
 
     /**
-     * Create keys that will be used by HMAC in manipulation of hash.
+     * Creates keys that will be used by HMAC in manipulation of hash.
      *
      * @return void
      */
@@ -102,10 +102,10 @@ class HMAC
     }
 
     /**
-     * Executes the HMAC in the hash.
+     * Performs HMAC in the $hash.
      *
-     * @param string $hash
-     * @return string
+     * @param string $hash Hash's key.
+     * @return string Final hash
      */
     public function execute($hash)
     {

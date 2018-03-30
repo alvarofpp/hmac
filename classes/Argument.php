@@ -18,9 +18,9 @@ class Argument
 
     protected $args = [
         '-h' => "Show help.",
-        '-i' => "Starts to save the directory specified in [dir].",
-        '-t' => "Tracking of the directory specific in [dir].",
-        '-d' => "Disable the guard of directory specific in [dir].",
+        '-i' => "Starts the guard of specified directory in [dir].",
+        '-t' => "Tracking of the specified directory in [dir].",
+        '-d' => "Disables the guard of specified directory in [dir].",
     ];
 
     protected $longArgs = [
@@ -35,7 +35,7 @@ class Argument
     }
 
     /**
-     * Show the help message on the terminal.
+     * Shows the help message in terminal.
      *
      * @return void
      */
@@ -49,7 +49,7 @@ class Argument
     }
 
     /**
-     * Show the arguments that are accepted by the program.
+     * Shows the arguments that are accepted by the program.
      *
      * @return void
      */
@@ -62,7 +62,7 @@ class Argument
     }
 
     /**
-     * Treatment of the argument to be exhibited in the terminal.
+     * Treats the argument to be exhibited in the terminal.
      *
      * @return string $arg Argument to exhibition
      */
@@ -80,9 +80,9 @@ class Argument
     }
 
     /**
-     * Show the help message on the terminal.
+     * Validates arguments sent by the terminal.
      *
-     * @return boolean True if arguments are validated, false if arguments are not validated
+     * @return bool True if arguments are valid, false if arguments are not valid
      */
     public function validate($args)
     {

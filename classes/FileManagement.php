@@ -31,7 +31,7 @@ class FileManagement
     }
 
     /**
-     * Load JSON file data of directory.
+     * Loads JSON file with directory data.
      *
      * @return void
      */
@@ -39,7 +39,7 @@ class FileManagement
     {
         $this->dirGuardExist();
 
-        if (!$this->fileExist()) {
+        if (!file_exists($this->file)) {
             return;
         }
 
@@ -48,19 +48,9 @@ class FileManagement
     }
 
     /**
-     * Load JSON file data of directory.
+     * Verifies that program directory exists.
      *
-     * @return bool True if file exist, false if not exist
-     */
-    private function fileExist()
-    {
-        return file_exists($this->file)?true:false;
-    }
-
-    /**
-     * Verify that directory of program exist.
-     *
-     * @return bool True if there is, false if not there is
+     * @return bool True if exists, false if not exists
      */
     private function dirGuardExist()
     {
@@ -73,15 +63,15 @@ class FileManagement
     }
 
     /**
-     * Verify that directory exist.
+     * Verifies if the directory exists.
      *
-     * @param string $dir Directory that you want to check if it exists
-     * @return bool True if there is, false if not there is
+     * @param string $dir Directory you want to check if exists
+     * @return bool True if exists, false if not exists
      */
     public function dirExist($dir)
     {
         if (!is_dir($dir)) {
-            (new Display())->show('Directory does not exist.', 'error');
+            (new Display())->show('Directory does not exist!', 'error');
             return false;
         }
 
@@ -92,15 +82,15 @@ class FileManagement
     }
 
     /**
-     * Verify that directory exist.
+     * Verifies if the directory exists.
      *
-     * @param string $dir Directory that you want to check if it exists
-     * @return bool True if there is, false if not there is
+     * @param string $dir Directory you want to check if exists
+     * @return bool True if exists, false if not exists
      */
     public static function dirValidate($dir)
     {
         if (!is_dir($dir)) {
-            (new Display())->show('Directory does not exist.', 'error');
+            (new Display())->show('Directory does not exist!', 'error');
             return false;
         }
 
@@ -108,10 +98,10 @@ class FileManagement
     }
 
     /**
-     * Go through the files in the directory and execute hmac for each one.
+     * Go through the files in directory and executes hmac for each one.
      *
-     * @param HMAC $hmac HMAC class for apply function execute
-     * @param string $path Paths of files
+     * @param HMAC $hmac HMAC class for apply function 'execute'
+     * @param string $path Files path
      * @return void
      */
     public function through(HMAC $hmac, $path = null)
@@ -120,18 +110,15 @@ class FileManagement
             $path = $this->dir;
         }
 
-
         $dir = new DirectoryIterator($path);
 
         foreach ($dir as $file) {
-
             $filePath = $path . $file->getFilename();
 
             if (!$file->isDot() && $file->isDir()) {
                 $this->through($hmac, $filePath . '/');
 
             } elseif (!$file->isDot()) {
-
                 array_push($this->filesData, [
                     "file" => $file->getFilename(),
                     "dir" => $path,
@@ -142,7 +129,7 @@ class FileManagement
     }
 
     /**
-     * Save HMAC of the files in JSON file.
+     * Saves HMAC of the files in JSON file.
      *
      * @return void
      */
@@ -160,10 +147,10 @@ class FileManagement
     }
 
     /**
-     * Search filename in jsonData.
+     * Searches the filename in jsonData.
      *
      * @param string $filename The filename you want to search
-     * @return array|int -1 if filename is not in jsonData or return array with values
+     * @return array|int -1 if the filename is not in jsonData or return values array if exists in jsonData
      */
     public function search($filename)
     {
@@ -181,22 +168,22 @@ class FileManagement
     }
 
     /**
-     * Remove guard of files of the directory.
+     * Disables guard of directory files.
      *
      * @return void
      */
-    public function remove()
+    public function disable()
     {
-        if ($this->dirGuardExist() && $this->fileExist()) {
+        if ($this->dirGuardExist() && file_exists($this->file)) {
             unlink($this->file);
-            (new Display())->show('HMAC files from the ' . $this->dir . ' directory are no longer being saved.', 'warning');
+            (new Display())->show('HMAC files from the ' . $this->dir . ' directory is no longer being saved.', 'warning');
         } else {
             (new Display())->show($this->dir . ' directory was not saved by program.', 'alert');
         }
     }
 
     /**
-     * Realizes the tracking of files of directory.
+     * Performs tracking of directory files.
      *
      * @return void
      */
@@ -212,21 +199,21 @@ class FileManagement
 
                 // Altered files
                 if (!($fileData['hmac'] == $values['hmac'])) {
-                    $display->show('File ' . $fileData['file'] . ' has be altered!', 'alter');
+                    $display->show('File ' . $fileData['file'] . ' has been altered!', 'alter');
                 }
 
                 unset($this->jsonData[$values['key']]);
 
             } else {
                 // New files
-                $display->show('File ' . $data['file'] . ' has be added!', 'add');
+                $display->show('File ' . $data['file'] . ' has been added!', 'add');
             }
         }
 
         // Files that were deleted
         if (!empty($this->jsonData)) {
             foreach ($this->jsonData as $data) {
-                $display->show('File ' . $data['file'] . ' has be deleted!', 'delete');
+                $display->show('File ' . $data['file'] . ' has been deleted!', 'delete');
             }
         }
 

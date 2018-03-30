@@ -24,8 +24,8 @@ class Display
     /**
      * Show the message in terminal.
      *
-     * @param string $msg Display you want to display in the terminal
-     * @param string null $cod Code of colors that you want the message to have
+     * @param string $msg The message you want to display in the terminal
+     * @param string null $cod Code of colors that you want the message have
      * @return void
      */
     public function show($msg, $cod = null)
