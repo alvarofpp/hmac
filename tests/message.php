@@ -5,17 +5,17 @@
  * E-mail: alvarofepipa@gmail.com
  */
 
-require dirname(__DIR__) . '/classes/Message.php';
+require dirname(__DIR__) . '/classes/Display.php';
 
-use Classes\Message;
+use Classes\Display;
 
-(new Message())->show('DELETE', 'delete');
-(new Message())->show('ADD', 'add');
-(new Message())->show('ALTER', 'alter');
-(new Message())->show('WARNING', 'warning');
+(new Display())->show('DELETE', 'delete');
+(new Display())->show('ADD', 'add');
+(new Display())->show('ALTER', 'alter');
+(new Display())->show('WARNING', 'warning');
 
-(new Message())->show('ERROR', 'error');
-(new Message())->show('SUCCESS', 'success');
-(new Message())->show('ALERT', 'alert');
+(new Display())->show('ERROR', 'error');
+(new Display())->show('SUCCESS', 'success');
+(new Display())->show('ALERT', 'alert');
 
-(new Message())->show('NOT EXIST', 'hueragem');
+(new Display())->show('NOT EXIST', 'hueragem');

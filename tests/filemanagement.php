@@ -5,7 +5,7 @@
  * E-mail: alvarofepipa@gmail.com
  */
 
-require dirname(__DIR__) . '/classes/Message.php';
+require dirname(__DIR__) . '/classes/Display.php';
 require dirname(__DIR__) . '/classes/FileManagement.php';
 
 use Classes\FileManagement;

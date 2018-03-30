@@ -7,7 +7,7 @@
 namespace Classes;
 
 /**
-* This class performs the operations required to run the Hash-based Message Authentication Code (HMAC).
+* This class performs the operations required to run the Hash-based Display Authentication Code (HMAC).
 */
 class HMAC
 {
