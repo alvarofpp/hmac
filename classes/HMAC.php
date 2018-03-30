@@ -25,7 +25,7 @@ class HMAC
     {
         $this->ipad = '00110110';
         $this->opad = '01011100';
-        $this->sizeB = 32;
+        $this->sizeB = 64;
         $this->key = 'segurancaEmR3d3s';
 
         $this->fileManagement = new FileManagement($dir);
@@ -48,7 +48,7 @@ class HMAC
         $len = strlen($this->key);
 
         if ($len < $this->sizeB) {
-            $this->key = str_pad($this->key, 64, 0, STR_PAD_LEFT);
+            $this->key = str_pad($this->key, $this->sizeB, 0, STR_PAD_LEFT);
         } elseif ($len > $this->sizeB) {
             $this->key = md5($this->key);
         }
