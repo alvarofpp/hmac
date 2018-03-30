@@ -4,6 +4,9 @@
  * Github: alvarofpp
  * E-mail: alvarofepipa@gmail.com
  */
+namespace Classes;
+
+use DirectoryIterator;
 
 /**
 * This class performs operations for file management.
@@ -83,7 +86,7 @@ class FileManagement
         }
 
         $this->dir = substr($dir, -1)=='/'?$dir:$dir.'/';
-        $this->file = dirname(__FILE__) . '/' . self::JSON_PATH  . md5($this->dir) . ".json";
+        $this->file = dirname(dirname(__FILE__)) . '/' . self::JSON_PATH  . md5($this->dir) . ".json";
 
         return true;
     }
@@ -148,7 +151,7 @@ class FileManagement
         $this->dirGuardExist();
 
         $json = json_encode($this->filesData);
-
+        (new Message())->show($this->file, 'error');
         $file = fopen($this->file, "wb");
         fwrite($file, $json);
         fclose($file);

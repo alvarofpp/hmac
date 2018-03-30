@@ -5,8 +5,10 @@
  * E-mail: alvarofepipa@gmail.com
  */
 
-require dirname(__DIR__) . '/Message.php';
-require dirname(__DIR__) . '/FileManagement.php';
+require dirname(__DIR__) . '/classes/Message.php';
+require dirname(__DIR__) . '/classes/FileManagement.php';
+
+use Classes\FileManagement;
 
 echo FileManagement::dirValidate(dirname(__DIR__) . '/huehuehue');
 echo FileManagement::dirValidate(dirname(__DIR__) . '/test')."\n";

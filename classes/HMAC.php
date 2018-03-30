@@ -4,6 +4,7 @@
  * Github: alvarofpp
  * E-mail: alvarofepipa@gmail.com
  */
+namespace Classes;
 
 /**
 * This class performs the operations required to run the Hash-based Message Authentication Code (HMAC).

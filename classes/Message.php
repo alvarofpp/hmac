@@ -4,6 +4,7 @@
  * Github: alvarofpp
  * E-mail: alvarofepipa@gmail.com
  */
+namespace Classes;
 
 /**
 * This class shows messages in the terminal of different ways.

@@ -5,7 +5,9 @@
  * E-mail: alvarofepipa@gmail.com
  */
 
-require dirname(__DIR__) . '/Message.php';
+require dirname(__DIR__) . '/classes/Message.php';
+
+use Classes\Message;
 
 (new Message())->show('DELETE', 'delete');
 (new Message())->show('ADD', 'add');
