@@ -12,6 +12,9 @@ use Classes\Argument;
 
 $argument = new Argument();
 
-// $argument->validate(['-h', '--help', '---help']);
+$argument->validate(['-h', '--help', '---help']);
+
+$argument->validate(['-i', 'folder/']);
+$argument->validate(['-i', '--help']);
 
 $argument->help();

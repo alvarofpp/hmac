@@ -17,17 +17,34 @@ class Argument
     protected $display;
 
     protected $args = [
-        '-h' => "Show help.",
-        '-i' => "Starts the guard of specified directory in [dir].",
-        '-t' => "Tracking of the specified directory in [dir].",
-        '-d' => "Disables the guard of specified directory in [dir].",
+        '-h' => [
+            'description' => 'Show help.',
+        ],
+        '-i' => [
+            'acceptValue' => true,
+            'description' => 'Starts the guard of specified directory in [dir].',
+        ],
+        '-t' => [
+            'acceptValue' => true,
+            'description' => 'Tracking of the specified directory in [dir].',
+        ],
+        '-d' => [
+            'acceptValue' => true,
+            'description' => 'Disables the guard of specified directory in [dir].',
+        ],
     ];
 
     protected $longArgs = [
-        '--help' => '-h',
+        '--help' => [
+            'argumentBase' => '-h',
+        ],
     ];
 
     const SPACES = 12;
+
+    const ARG_VALUE = 0;
+    const SIMPLE_ARG = 1;
+    const LONG_ARG = 2;
 
     public function __construct()
     {
@@ -55,9 +72,9 @@ class Argument
      */
     private function showArgs()
     {
-        foreach ($this->args as $arg => $description) {
+        foreach ($this->args as $arg => $values) {
             $arg = $this->treatmentArg($arg);
-            $this->display->show($arg . $description);
+            $this->display->show($arg . $values['description']);
         }
     }
 
@@ -69,7 +86,13 @@ class Argument
     private function treatmentArg($arg)
     {
         // LongArgs
-        $longArgs = array_keys($this->longArgs, $arg);
+        $longArgs = [];
+        foreach ($this->longArgs as $key => $values) {
+            if ($values['argumentBase'] == $arg) {
+                array_push($longArgs, $key);
+            }
+        }
+
         $args = array_merge([$arg], $longArgs);
 
         // Spacing
@@ -77,6 +100,26 @@ class Argument
         $args = str_pad($args, self::SPACES, ' ', STR_PAD_RIGHT);
 
         return $args;
+    }
+
+    private function acceptValue($arg)
+    {
+        $count = substr_count($arg, '-');
+
+        if ($count == self::SIMPLE_ARG) {
+            return isset($this->args[$arg]['acceptValue'])?$this->args[$arg]['acceptValue']:false;
+        }
+
+        $argument = $this->longArgs[$arg]['argumentBase'];
+        return isset($this->args[$argument]['acceptValue'])?$this->args[$argument]['acceptValue']:false;
+    }
+
+    private function validateValue($arg)
+    {
+        $count = substr_count(substr($arg, 0, 2), '-');
+
+        return ($count == self::ARG_VALUE);
+
     }
 
     /**
@@ -88,10 +131,17 @@ class Argument
     {
         $totalArgs = array_merge($this->args, $this->longArgs);
 
-        foreach ($args as $arg) {
+        for ($i = 0; $i < count($args); $i++) {
+            $arg = $args[$i];
+
             if (!array_key_exists($arg, $totalArgs)) {
                 $this->display->show('Invalid argument: "' . $arg . '"', 'error');
                 return false;
+
+            } elseif ($this->acceptValue($arg) && (! $this->validateValue($args[++$i]))) {
+                $this->display->show('Invalid value for argument: "' . $arg . '" => "' . $args[$i] . '"', 'error');
+                return false;
+
             }
         }
 
