@@ -138,7 +138,7 @@ class FileManagement
         $this->dirGuardExist();
 
         $json = json_encode($this->filesData);
-        (new Display())->show($this->file, 'error');
+
         $file = fopen($this->file, "wb");
         fwrite($file, $json);
         fclose($file);
@@ -150,7 +150,7 @@ class FileManagement
      * Searches the filename in jsonData.
      *
      * @param string $filename The filename you want to search
-     * @return array|int -1 if the filename is not in jsonData or return values array if exists in jsonData
+     * @return int -1 if the filename is not in jsonData or return array key if exists in jsonData
      */
     public function search($filename)
     {
@@ -160,7 +160,7 @@ class FileManagement
 
         foreach ($this->jsonData as $key => $array) {
             if ($array['file'] == $filename) {
-                return $this->jsonData[$key];
+                return $key;
             }
         }
 
@@ -192,17 +192,17 @@ class FileManagement
         $display = new Display();
 
         foreach ($this->filesData as $data) {
-            $values = $this->search($data['file']);
+            $key = $this->search($data['file']);
 
-            if (!($values == -1)) {
-                $fileData = $this->jsonData[$values['key']];
+            if (!($key == -1)) {
+                $fileData = $this->jsonData[$key];
 
                 // Altered files
-                if (!($fileData['hmac'] == $values['hmac'])) {
+                if (!($fileData['hmac'] == $data['hmac'])) {
                     $display->show('File ' . $fileData['file'] . ' has been altered!', 'alter');
                 }
 
-                unset($this->jsonData[$values['key']]);
+                unset($this->jsonData[$key]);
 
             } else {
                 // New files
