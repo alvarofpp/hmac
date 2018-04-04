@@ -143,7 +143,7 @@ class FileManagement
         fwrite($file, $json);
         fclose($file);
 
-        (new Display())->show('Files saved!', 'success');
+        (new Display())->show('HMAC of files has been saved!!', 'success');
     }
 
     /**
@@ -199,21 +199,21 @@ class FileManagement
 
                 // Altered files
                 if (!($fileData['hmac'] == $data['hmac'])) {
-                    $display->show('File ' . $fileData['file'] . ' has been altered!', 'alter');
+                    $display->show('File ' . ($fileData['dir'] . $fileData['file']) . ' has been altered!', 'alter');
                 }
 
                 unset($this->jsonData[$key]);
 
             } else {
                 // New files
-                $display->show('File ' . $data['file'] . ' has been added!', 'add');
+                $display->show('File ' . ($data['dir'] . $data['file']) . ' has been added!', 'add');
             }
         }
 
         // Files that were deleted
         if (!empty($this->jsonData)) {
             foreach ($this->jsonData as $data) {
-                $display->show('File ' . $data['file'] . ' has been deleted!', 'delete');
+                $display->show('File ' . ($data['dir'] . $data['file']) . ' has been deleted!', 'delete');
             }
         }
 
