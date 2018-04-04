@@ -24,6 +24,7 @@ class FileManagement
     {
         if (!$this->dirExist($dir)) {
             exit();
+
         }
 
         $this->filesData = [];
@@ -41,6 +42,7 @@ class FileManagement
 
         if (!file_exists($this->file)) {
             return;
+
         }
 
         $jsonFile = file_get_contents($this->file);
@@ -57,6 +59,7 @@ class FileManagement
         if (!file_exists(self::JSON_PATH)) {
             mkdir(self::JSON_PATH);
             return false;
+
         }
 
         return true;
@@ -73,12 +76,23 @@ class FileManagement
         if (!is_dir($dir)) {
             (new Display())->show('Directory does not exist!', 'error');
             return false;
+
         }
 
         $this->dir = substr($dir, -1)=='/'?$dir:$dir.'/';
         $this->file = dirname(dirname(__FILE__)) . '/' . self::JSON_PATH  . md5($this->dir) . ".json";
 
         return true;
+    }
+
+    /**
+     * Verifies if file guard of directory exists.
+     *
+     * @return bool True if exists, false if not exists
+     */
+    public function fileGuard()
+    {
+        return file_exists($this->file);
     }
 
     /**
@@ -92,6 +106,7 @@ class FileManagement
         if (!is_dir($dir)) {
             (new Display())->show('Directory does not exist!', 'error');
             return false;
+
         }
 
         return true;
@@ -108,6 +123,7 @@ class FileManagement
     {
         if (!isset($path)) {
             $path = $this->dir;
+
         }
 
         $dir = new DirectoryIterator($path);
@@ -143,7 +159,7 @@ class FileManagement
         fwrite($file, $json);
         fclose($file);
 
-        (new Display())->show('HMAC of files has been saved!!', 'success');
+        (new Display())->show('HMAC of files has been saved!', 'success');
     }
 
     /**
@@ -152,15 +168,17 @@ class FileManagement
      * @param string $filename The filename you want to search
      * @return int -1 if the filename is not in jsonData or return array key if exists in jsonData
      */
-    public function search($filename)
+    private function search($filename)
     {
         if (!isset($this->jsonData)) {
             return -1;
+
         }
 
         foreach ($this->jsonData as $key => $array) {
             if ($array['file'] == $filename) {
                 return $key;
+
             }
         }
 
@@ -177,6 +195,7 @@ class FileManagement
         if ($this->dirGuardExist() && file_exists($this->file)) {
             unlink($this->file);
             (new Display())->show('HMAC files from the ' . $this->dir . ' directory is no longer being saved.', 'warning');
+
         } else {
             (new Display())->show($this->dir . ' directory was not saved by program.', 'alert');
         }
@@ -200,6 +219,7 @@ class FileManagement
                 // Altered files
                 if (!($fileData['hmac'] == $data['hmac'])) {
                     $display->show('File ' . ($fileData['dir'] . $fileData['file']) . ' has been altered!', 'alter');
+
                 }
 
                 unset($this->jsonData[$key]);
@@ -215,6 +235,7 @@ class FileManagement
             foreach ($this->jsonData as $data) {
                 $display->show('File ' . ($data['dir'] . $data['file']) . ' has been deleted!', 'delete');
             }
+
         }
 
         $this->save();
