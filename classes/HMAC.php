@@ -6,6 +6,9 @@
  */
 namespace Classes;
 
+require_once 'Display.php';
+require_once 'FileManagement.php';
+
 /**
 * This class performs the operations required to run the Hash-based Message Authentication Code (HMAC).
 */
@@ -33,14 +36,50 @@ class HMAC
     }
 
     /**
+     * Performs tracking for the first time.
+     *
+     * @return void
+     */
+    public function firstFilesTracking()
+    {
+        if ($this->fileManagement->fileGuard()) {
+            (new Display())->show('Directory is already guarded by the program.', 'warning');
+            return;
+        }
+
+        $this->fileManagement->through($this);
+        $this->fileManagement->tracking();
+    }
+
+    /**
      * Performs tracking.
      *
      * @return void
      */
     public function filesTracking()
     {
+        if (! $this->fileManagement->fileGuard()) {
+            (new Display())->show('Directory is NOT already protected by the program.', 'warning');
+            return;
+        }
+
         $this->fileManagement->through($this);
         $this->fileManagement->tracking();
+    }
+
+    /**
+     * Disables guard of directory files.
+     *
+     * @return void
+     */
+    public function disable()
+    {
+        if (! $this->fileManagement->fileGuard()) {
+            (new Display())->show('Directory is NOT already protected by the program.', 'warning');
+            return;
+        }
+
+        $this->fileManagement->disable();
     }
 
     /**
@@ -54,6 +93,7 @@ class HMAC
 
         if ($len < $this->sizeB) {
             $this->key = str_pad($this->key, $this->sizeB, 0, STR_PAD_LEFT);
+
         } elseif ($len > $this->sizeB) {
             $this->key = md5($this->key);
         }

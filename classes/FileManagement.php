@@ -6,6 +6,9 @@
  */
 namespace Classes;
 
+require_once 'HMAC.php';
+require_once 'Display.php';
+
 use DirectoryIterator;
 
 /**
@@ -24,7 +27,6 @@ class FileManagement
     {
         if (!$this->dirExist($dir)) {
             exit();
-
         }
 
         $this->filesData = [];
@@ -42,7 +44,6 @@ class FileManagement
 
         if (!file_exists($this->file)) {
             return;
-
         }
 
         $jsonFile = file_get_contents($this->file);
@@ -59,7 +60,6 @@ class FileManagement
         if (!file_exists(self::JSON_PATH)) {
             mkdir(self::JSON_PATH);
             return false;
-
         }
 
         return true;
@@ -76,7 +76,6 @@ class FileManagement
         if (!is_dir($dir)) {
             (new Display())->show('Directory does not exist!', 'error');
             return false;
-
         }
 
         $this->dir = substr($dir, -1)=='/'?$dir:$dir.'/';
@@ -106,7 +105,6 @@ class FileManagement
         if (!is_dir($dir)) {
             (new Display())->show('Directory does not exist!', 'error');
             return false;
-
         }
 
         return true;
@@ -123,7 +121,6 @@ class FileManagement
     {
         if (!isset($path)) {
             $path = $this->dir;
-
         }
 
         $dir = new DirectoryIterator($path);
@@ -172,13 +169,11 @@ class FileManagement
     {
         if (!isset($this->jsonData)) {
             return -1;
-
         }
 
         foreach ($this->jsonData as $key => $array) {
-            if ($array['file'] == $filename) {
+            if (($array['dir'] . $array['file']) == $filename) {
                 return $key;
-
             }
         }
 
@@ -194,10 +189,10 @@ class FileManagement
     {
         if ($this->dirGuardExist() && file_exists($this->file)) {
             unlink($this->file);
-            (new Display())->show('HMAC files from the ' . $this->dir . ' directory is no longer being saved.', 'warning');
+            (new Display())->show('HMAC files from the "' . $this->dir . '" directory is no longer being saved.', 'warning');
 
         } else {
-            (new Display())->show($this->dir . ' directory was not saved by program.', 'alert');
+            (new Display())->show('"' . $this->dir . '" directory was not saved by program.', 'alert');
         }
     }
 
@@ -211,7 +206,7 @@ class FileManagement
         $display = new Display();
 
         foreach ($this->filesData as $data) {
-            $key = $this->search($data['file']);
+            $key = $this->search(($data['dir']. $data['file']));
 
             if (!($key == -1)) {
                 $fileData = $this->jsonData[$key];
@@ -219,7 +214,6 @@ class FileManagement
                 // Altered files
                 if (!($fileData['hmac'] == $data['hmac'])) {
                     $display->show('File ' . ($fileData['dir'] . $fileData['file']) . ' has been altered!', 'alter');
-
                 }
 
                 unset($this->jsonData[$key]);
@@ -235,11 +229,9 @@ class FileManagement
             foreach ($this->jsonData as $data) {
                 $display->show('File ' . ($data['dir'] . $data['file']) . ' has been deleted!', 'delete');
             }
-
         }
 
-        $this->save();
-
         $display->show('Tracking completed!', 'alert');
+        $this->save();
     }
 }

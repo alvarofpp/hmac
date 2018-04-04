@@ -6,6 +6,8 @@
  */
 namespace Classes;
 
+require_once 'Display.php';
+
 /**
 * This class is used to handle the arguments sent by the terminal.
 */
@@ -91,7 +93,6 @@ class Argument
         foreach ($this->longArgs as $key => $values) {
             if ($values['argumentBase'] == $arg) {
                 array_push($longArgs, $key);
-
             }
         }
 
@@ -116,7 +117,6 @@ class Argument
 
         if ($count == self::SIMPLE_ARG) {
             return isset($this->args[$arg]['acceptValue'])?$this->args[$arg]['acceptValue']:false;
-
         }
 
         $argument = $this->longArgs[$arg]['argumentBase'];
@@ -149,7 +149,6 @@ class Argument
             $this->display->show('The amount of arguments is incorrect for the correct execution of the program!', 'error');
             $this->display->show('Missing value of argument "' . $args[$i] . '".', 'error');
             return false;
-
         }
 
         return true;
@@ -172,10 +171,15 @@ class Argument
                 $this->display->show('Invalid argument: "' . $arg . '"', 'error');
                 return false;
 
-            } elseif ($this->acceptValue($arg) && $this->nextArgExist($args, $i) && (! $this->validateValue($args[++$i]))) {
-                $this->display->show('Invalid value for argument: "' . $arg . '" => "' . $args[$i] . '"', 'error');
-                return false;
+            } elseif ($this->acceptValue($arg)) {
+                if (!$this->nextArgExist($args, $i)) {
+                    return false;
+                }
 
+                if (! $this->validateValue($args[++$i])) {
+                    $this->display->show('Invalid value for argument: "' . $arg . '" => "' . $args[$i] . '"', 'error');
+                    return false;
+                }
             }
         }
 
@@ -194,7 +198,6 @@ class Argument
 
         if ($count == self::SIMPLE_ARG) {
             return $arg;
-
         }
 
         return isset($this->longArgs[$arg]['argumentBase'])?$this->longArgs[$arg]['argumentBase']:$arg;
