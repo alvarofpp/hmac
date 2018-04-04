@@ -6,6 +6,9 @@
  */
 namespace Classes;
 
+require_once 'HMAC.php';
+require_once 'Display.php';
+
 use DirectoryIterator;
 
 /**
@@ -82,6 +85,16 @@ class FileManagement
     }
 
     /**
+     * Verifies if file guard of directory exists.
+     *
+     * @return bool True if exists, false if not exists
+     */
+    public function fileGuard()
+    {
+        return file_exists($this->file);
+    }
+
+    /**
      * Verifies if the directory exists.
      *
      * @param string $dir Directory you want to check if exists
@@ -138,29 +151,29 @@ class FileManagement
         $this->dirGuardExist();
 
         $json = json_encode($this->filesData);
-        (new Display())->show($this->file, 'error');
+
         $file = fopen($this->file, "wb");
         fwrite($file, $json);
         fclose($file);
 
-        (new Display())->show('Files saved!', 'success');
+        (new Display())->show('HMAC of files has been saved!', 'success');
     }
 
     /**
      * Searches the filename in jsonData.
      *
      * @param string $filename The filename you want to search
-     * @return array|int -1 if the filename is not in jsonData or return values array if exists in jsonData
+     * @return int -1 if the filename is not in jsonData or return array key if exists in jsonData
      */
-    public function search($filename)
+    private function search($filename)
     {
         if (!isset($this->jsonData)) {
             return -1;
         }
 
         foreach ($this->jsonData as $key => $array) {
-            if ($array['file'] == $filename) {
-                return $this->jsonData[$key];
+            if (($array['dir'] . $array['file']) == $filename) {
+                return $key;
             }
         }
 
@@ -176,9 +189,10 @@ class FileManagement
     {
         if ($this->dirGuardExist() && file_exists($this->file)) {
             unlink($this->file);
-            (new Display())->show('HMAC files from the ' . $this->dir . ' directory is no longer being saved.', 'warning');
+            (new Display())->show('HMAC files from the "' . $this->dir . '" directory is no longer being saved.', 'warning');
+
         } else {
-            (new Display())->show($this->dir . ' directory was not saved by program.', 'alert');
+            (new Display())->show('"' . $this->dir . '" directory was not saved by program.', 'alert');
         }
     }
 
@@ -192,33 +206,32 @@ class FileManagement
         $display = new Display();
 
         foreach ($this->filesData as $data) {
-            $values = $this->search($data['file']);
+            $key = $this->search(($data['dir']. $data['file']));
 
-            if (!($values == -1)) {
-                $fileData = $this->jsonData[$values['key']];
+            if (!($key == -1)) {
+                $fileData = $this->jsonData[$key];
 
                 // Altered files
-                if (!($fileData['hmac'] == $values['hmac'])) {
-                    $display->show('File ' . $fileData['file'] . ' has been altered!', 'alter');
+                if (!($fileData['hmac'] == $data['hmac'])) {
+                    $display->show('File ' . ($fileData['dir'] . $fileData['file']) . ' has been altered!', 'alter');
                 }
 
-                unset($this->jsonData[$values['key']]);
+                unset($this->jsonData[$key]);
 
             } else {
                 // New files
-                $display->show('File ' . $data['file'] . ' has been added!', 'add');
+                $display->show('File ' . ($data['dir'] . $data['file']) . ' has been added!', 'add');
             }
         }
 
         // Files that were deleted
         if (!empty($this->jsonData)) {
             foreach ($this->jsonData as $data) {
-                $display->show('File ' . $data['file'] . ' has been deleted!', 'delete');
+                $display->show('File ' . ($data['dir'] . $data['file']) . ' has been deleted!', 'delete');
             }
         }
 
-        $this->save();
-
         $display->show('Tracking completed!', 'alert');
+        $this->save();
     }
 }
