@@ -11,6 +11,10 @@ namespace Classes;
 */
 class Display
 {
+    /**
+     * Colors that the text displayed in the terminal can assume.
+     * @var array
+     */
     protected $colors = [
         'delete' => "\e[0;31m",
         'add' => "\e[0;32m",
@@ -25,7 +29,7 @@ class Display
      * Show the message in terminal.
      *
      * @param string $msg The message you want to display in the terminal
-     * @param string null $cod Code of colors that you want the message have
+     * @param string|null $cod Code of colors that you want the message have
      * @return void
      */
     public function show($msg, $cod = null)

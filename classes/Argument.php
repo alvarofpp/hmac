@@ -14,10 +14,9 @@ require_once 'Display.php';
 class Argument
 {
     /**
-     * @var Display
+     * Arguments accepted by the program.
+     * @var array
      */
-    protected $display;
-
     protected $args = [
         '-h' => [
             'description' => 'Show help.',
@@ -36,18 +35,39 @@ class Argument
         ],
     ];
 
+    /**
+     * Long arguments accepted by the program.
+     * @var array
+     */
     protected $longArgs = [
         '--help' => [
             'argumentBase' => '-h',
         ],
     ];
 
+    /**
+     * @var Display
+     */
+    protected $display;
+
+    /**
+     * Spacing between arguments and their own descriptions.
+     * @var int
+     */
     const SPACES = 12;
 
+    /**
+     * Classification codes to strings passed by the terminal.
+     * @var int
+     */
     const ARG_VALUE = 0;
-    const SIMPLE_ARG = 1;
-    const LONG_ARG = 2;
+    const ARG_SIMPLE = 1;
+    const ARG_LONG = 2;
+    const ARG_OPTION = 3;
 
+    /**
+     * Argument constructor.
+     */
     public function __construct()
     {
         $this->display = new Display();
@@ -55,8 +75,6 @@ class Argument
 
     /**
      * Shows the help message in terminal.
-     *
-     * @return void
      */
     public function help()
     {
@@ -69,8 +87,6 @@ class Argument
 
     /**
      * Shows the arguments that are accepted by the program.
-     *
-     * @return void
      */
     private function showArgs()
     {
@@ -115,7 +131,7 @@ class Argument
     {
         $count = substr_count($arg, '-');
 
-        if ($count == self::SIMPLE_ARG) {
+        if ($count == self::ARG_SIMPLE) {
             return isset($this->args[$arg]['acceptValue'])?$this->args[$arg]['acceptValue']:false;
         }
 
@@ -189,6 +205,7 @@ class Argument
     /**
      * Get argument.
      *
+     * @param string $arg Argument
      * @return string The argument. If argument simple, returns himself, if argument long
      * verify if exists argument base: if exist returns argument base, if not exist returns argument long
      */
@@ -196,7 +213,7 @@ class Argument
     {
         $count = substr_count(substr($arg, 0, 2), '-');
 
-        if ($count == self::SIMPLE_ARG) {
+        if ($count == self::ARG_SIMPLE) {
             return $arg;
         }
 
