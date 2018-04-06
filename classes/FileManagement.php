@@ -42,7 +42,7 @@ class FileManagement
     {
         $this->dirGuardExist();
 
-        if (!file_exists($this->file)) {
+        if (! $this->fileGuardExist()) {
             return;
         }
 
@@ -89,7 +89,7 @@ class FileManagement
      *
      * @return bool True if exists, false if not exists
      */
-    public function fileGuard()
+    public function fileGuardExist()
     {
         return file_exists($this->file);
     }
@@ -194,6 +194,23 @@ class FileManagement
         } else {
             (new Display())->show('"' . $this->dir . '" directory was not saved by program.', 'alert');
         }
+    }
+
+    /**
+     * Performs tracking of directory files at first time.
+     *
+     * @return void
+     */
+    public function firstTracking()
+    {
+        $display = new Display();
+
+        foreach ($this->filesData as $data) {
+            $display->show('File ' . ($data['dir'] . $data['file']) . ' has been added!', 'add');
+        }
+
+        $display->show('Tracking completed!', 'alert');
+        $this->save();
     }
 
     /**

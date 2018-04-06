@@ -42,13 +42,13 @@ class HMAC
      */
     public function firstFilesTracking()
     {
-        if ($this->fileManagement->fileGuard()) {
+        if ($this->fileManagement->fileGuardExist()) {
             (new Display())->show('Directory is already guarded by the program.', 'warning');
             return;
         }
 
         $this->fileManagement->through($this);
-        $this->fileManagement->tracking();
+        $this->fileManagement->firstTracking();
     }
 
     /**
@@ -58,7 +58,7 @@ class HMAC
      */
     public function filesTracking()
     {
-        if (! $this->fileManagement->fileGuard()) {
+        if (! $this->fileManagement->fileGuardExist()) {
             (new Display())->show('Directory is NOT already protected by the program.', 'warning');
             return;
         }
@@ -74,7 +74,7 @@ class HMAC
      */
     public function disable()
     {
-        if (! $this->fileManagement->fileGuard()) {
+        if (! $this->fileManagement->fileGuardExist()) {
             (new Display())->show('Directory is NOT already protected by the program.', 'warning');
             return;
         }
