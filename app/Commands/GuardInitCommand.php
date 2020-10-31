@@ -31,7 +31,8 @@ class GuardInitCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return bool
+     * @throws DirectoryAlwaysGuardedException
      */
     public function handle()
     {
