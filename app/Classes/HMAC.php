@@ -7,6 +7,8 @@
 namespace App\Classes;
 
 
+use App\Models\Setting;
+
 /**
  * This class performs the operations required to run the Hash-based Message Authentication Code (HMAC).
  */
@@ -25,25 +27,27 @@ class HMAC
         $this->ipad = '00110110';
         $this->opad = '01011100';
         $this->sizeB = 64;
-        $this->key = 'segurancaEmR3d3s';
 
+        $this->defineKey();
         $this->createKeys();
     }
 
     /**
-     * Performs tracking.
+     * Takes the key set or assigns the default value to the key.
      *
      * @return void
      */
-    public function filesTracking()
+    private function defineKey()
     {
-        if (!$this->fileManagement->fileGuard()) {
-            (new Display())->show('Directory is NOT already protected by the program.', 'warning');
-            return;
-        }
+        $key = Setting::query()
+            ->where('name', 'hmac_key')
+            ->first();
 
-        $this->fileManagement->through($this);
-        $this->fileManagement->tracking();
+        if (is_null($key)) {
+            $this->key = $key->value;
+        } else {
+            $this->key = 'segurancaEmR3d3s';
+        }
     }
 
     /**
@@ -114,8 +118,7 @@ class HMAC
     public function execute($hash)
     {
         $hash = md5($hash . $this->ipadKey);
-        $hashFinal = md5($this->opadKey . $hash);
 
-        return $hashFinal;
+        return md5($this->opadKey . $hash);
     }
 }
