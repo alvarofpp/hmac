@@ -31,22 +31,6 @@ class HMAC
     }
 
     /**
-     * Performs tracking for the first time.
-     *
-     * @return void
-     */
-    public function firstFilesTracking()
-    {
-        if ($this->fileManagement->fileGuard()) {
-            (new Display())->show('Directory is already guarded by the program.', 'warning');
-            return;
-        }
-
-        $this->fileManagement->through($this);
-        $this->fileManagement->tracking();
-    }
-
-    /**
      * Performs tracking.
      *
      * @return void
@@ -60,21 +44,6 @@ class HMAC
 
         $this->fileManagement->through($this);
         $this->fileManagement->tracking();
-    }
-
-    /**
-     * Disables guard of directory files.
-     *
-     * @return void
-     */
-    public function disable()
-    {
-        if (!$this->fileManagement->fileGuard()) {
-            (new Display())->show('Directory is NOT already protected by the program.', 'warning');
-            return;
-        }
-
-        $this->fileManagement->disable();
     }
 
     /**

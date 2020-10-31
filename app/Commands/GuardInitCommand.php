@@ -37,7 +37,6 @@ class GuardInitCommand extends Command
     public function handle()
     {
         $dir = $this->argument('dir');
-        $hmac = new HMAC();
 
         if (!file_exists($dir)) {
             throw new DirectoryNotFoundException();
@@ -50,6 +49,7 @@ class GuardInitCommand extends Command
             throw new DirectoryAlwaysGuardedException();
         }
 
+        $hmac = new HMAC();
         $files = FileManagementService::through($hmac, $dir);
 
         DB::beginTransaction();

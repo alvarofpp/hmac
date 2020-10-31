@@ -27,7 +27,8 @@ class GuardDisableCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return bool
+     * @throws UnprotectedDirectoryException
      */
     public function handle()
     {
