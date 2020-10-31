@@ -15,6 +15,19 @@ class CreateFilesTable extends Migration
     {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
+
+            $table->string('name');
+
+            $table->string('hmac', 32)
+                ->unique();
+
+            $table->bigInteger('directory_id');
+            $table->foreign('directory_id')
+                ->references('id')
+                ->on('directories')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
             $table->timestamps();
         });
     }

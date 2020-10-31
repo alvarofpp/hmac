@@ -15,6 +15,11 @@ class CreateDirectoriesTable extends Migration
     {
         Schema::create('directories', function (Blueprint $table) {
             $table->id();
+
+            $table->string('name');
+
+            $table->text('absolute_path');
+
             $table->timestamps();
         });
     }
